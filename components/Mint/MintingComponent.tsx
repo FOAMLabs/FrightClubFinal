@@ -6,7 +6,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import styled from "@emotion/styled";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import Snackbar, { snackbarClasses } from "@mui/material/Snackbar";
+import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 
 import Image from "next/image";
