@@ -118,7 +118,7 @@ const MintNFTComponent = () => {
 
   // Function to handle incrementing the mint amount
   const incrementMintAmount = () => {
-    if (_mintAmount < maxMintAmountPerTx) {
+    if (_mintAmount < 3) {
       setMintAmount(_mintAmount + 1);
     }
   };
