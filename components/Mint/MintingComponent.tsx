@@ -241,7 +241,7 @@ const mintNFT = async () => {
                   backgroundColor: "black",
                 }
               }}
-              disabled={_mintAmount >= maxMintAmountPerTx || isMintLoading}
+              disabled={_mintAmount >=3}
             >
               +
             </Button>
