@@ -177,7 +177,7 @@ const MintNFTComponent = () => {
           display: "block",
           marginLeft: "auto",
           marginRight: "auto",
-          marginTop: 1,
+          marginTop: 2,
           marginBottom: 1,
           maxWidth: "100%",
           borderRadius: "10px"
