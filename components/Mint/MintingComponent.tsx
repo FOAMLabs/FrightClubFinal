@@ -78,6 +78,8 @@ const MintNFTComponent = () => {
     value: BigInt(mintAmountInWei),
   });
 
+  console.log('writeConfig:', writeConfig); 
+
   const {
     data: mintData,
     write,
@@ -86,12 +88,21 @@ const MintNFTComponent = () => {
     error: mintError,
   } = useContractWrite(writeConfig);
 
+  console.log('mintData:', mintData);  // Log the mintData object
+console.log('isMintLoading:', isMintLoading);  // Log the loading state
+console.log('isMintStarted:', isMintStarted);  // Log the success state
+console.log('mintError:', mintError);  // Log any errors
+
+
   const {
     data: txData,
     error: txError,
   } = useWaitForTransaction({
     hash: mintData?.hash,
   });
+
+ console.log('txData:', txData);  // Log the txData object
+ console.log('txError:', txError);  // Log any errors
 
   const calculateCostInEth = (amount: number) => {
     const costInEth = 0.02 * amount;
@@ -116,24 +127,26 @@ const MintNFTComponent = () => {
   };
 
   
-  // Mint NFT function
-  const mintNFT = async () => {
+const mintNFT = async () => {
     try {
-      if (write) {
-        // You can customize arguments, gas, and other transaction parameters here.
-        // Call the mint function from your smart contract
-        await write();
-      }
+        console.log('write function:', write);  // Log the write function
+        if (write) {
+            // You can customize arguments, gas, and other transaction parameters here.
+            // Call the mint function from your smart contract
+            await write();
+        }
     } catch (error) {
-      if (typeof error === "string") {
-        console.error(error);
-      } else if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("An  error occurred.");
-      }
+        console.error('Error in mintNFT:', error);  // Log any errors
+        if (typeof error === "string") {
+            console.error(error);
+        } else if (error instanceof Error) {
+            console.error(error.message);
+        } else {
+            console.error("An unknown error occurred.");
+        }
     }
-  };
+};
+
   function formatAddress(address?: string) {
     // Define how many characters you want to keep before and after the dots.
     const charactersToKeep = 4;
