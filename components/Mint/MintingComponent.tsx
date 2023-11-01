@@ -62,28 +62,8 @@ const MintNFTComponent = () => {
       });
     
     
-  const contractConfig = {
-    address: "0x46b77a64dCeE752dd4F9e5b26A5273B2e182e57A",
-    abi: FCABI,
-  };
-  
-  const { data: maxMintAmountPerTxData } = useContractRead({
-    ...contractConfig,
-    functionName: "maxMintAmountPerTx",
-    watch: true,
-  });
 
-  const { data: totalSupplyData } = useContractRead({
-    ...contractConfig,
-    functionName: "totalSupply",
-    watch: true,
-  });
 
-  const { data: costData } = useContractRead({
-    ...contractConfig,
-    functionName: "cost",
-    watch: true,
-  });
 
   const decimalNumber = 0.02;
   const mintAmountInWei = BigInt(decimalNumber * _mintAmount * 1e18); // 1e18 is used to convert to Wei
