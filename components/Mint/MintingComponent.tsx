@@ -273,7 +273,7 @@ const MintNFTComponent = () => {
                 }
               }}
             
-              disabled={_mintAmount <= 0 || isMintLoading}
+             
             >
               Mint NFT
             </Button>
