@@ -92,7 +92,7 @@ const MintNFTComponent = () => {
   const decimalNumber = 0.02;
   const mintAmountInWei = BigInt(decimalNumber * _mintAmount * 1e18); // 1e18 is used to convert to Wei
 
-  const { write } = useContractWrite({
+  const { write, data: mintData } = useContractWrite({
     address: '0x46b77a64dCeE752dd4F9e5b26A5273B2e182e57A',
     abi: FCABI,
     functionName:'mint',
