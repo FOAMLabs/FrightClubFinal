@@ -205,7 +205,7 @@ const mintNFT = async () => {
             <Button
               variant="contained"
               onClick={decrementMintAmount}
-              disabled={_mintAmount <= 1 || isMintLoading}
+              disabled={_mintAmount <= 1}
               sx={{
                 backgroundColor: "#B31414",
                 "&:hover": {
@@ -270,7 +270,7 @@ const mintNFT = async () => {
                 }
               }}
             
-              disabled={_mintAmount <= 0 || isMintLoading}
+              disabled={_mintAmount <= 0}
             >
               Mint NFT
             </Button>
