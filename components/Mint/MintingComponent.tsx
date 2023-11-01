@@ -1,3 +1,5 @@
+
+import { FCABI } from "./abi";
 import React, { useState, useEffect, useMemo } from "react";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -6,10 +8,11 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import styled from "@emotion/styled";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import Snackbar from "@mui/material/Snackbar";
+import Snackbar, { snackbarClasses } from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import { FCABI } from "./abi";
-
+import MerkleTree from 'merkletreejs';
+import keccak256 from 'keccak256';
+import { WlAddresses } from '../../utils/WlAddresses';
 import Image from "next/image";
 import { Box } from "@mui/material";
 
@@ -22,7 +25,11 @@ import {
   useContractRead,
 } from "wagmi";
 
-
+enum MintStage {
+  WhitelistOnly,
+  Public,
+  
+}
 
 const StyledCard = styled(Card)({
     maxWidth: 300,
@@ -44,10 +51,18 @@ const MintNFTComponent = () => {
     const [maxMintAmountPerTx] = useState<number>(3); 
     const [_mintAmount, setMintAmount] = useState<number>(1);
     const { isConnected, address } = useAccount();
+    const [mintStage, setMintStage] = useState<MintStage>(MintStage.WhitelistOnly);
     const { connectModalOpen } = useConnectModal(); 
     const [isWalletConnected, setIsWalletConnected] = useState<boolean>(true); 
-
-
+    const addresses = WlAddresses;
+    const leaves = useMemo(() => addresses.map(x => keccak256(x)), [addresses]);
+    const tree = useMemo(() => new MerkleTree(leaves, keccak256, { sortPairs: true }), [leaves]);
+    const buf2hex = (x: Buffer): string => '0x' + x.toString('hex');
+  
+    console.log(buf2hex(tree.getRoot()));
+  
+    const [leaf, setLeaf] = useState<string>(''); // Set initially to an empty string
+    const [_merkleProof, setMerkleProof] = useState<string[]>([]); // Set initially to an empty array
     useEffect(() => {
       console.log("connectModalOpen:", connectModalOpen);
       if (connectModalOpen) {
@@ -61,38 +76,50 @@ const MintNFTComponent = () => {
         },
       });
     
+    useEffect(() => {
+      if (address) {
+        const newLeaf = keccak256(address).toString('hex');
+        setLeaf(newLeaf);
+        const newProof = tree.getProof(newLeaf).map(({ data }) => buf2hex(data));
+        setMerkleProof(newProof);
+      }
+    }, [address, tree]);
     
 
+    
+  const contractConfig = {
+    address: "0xbBb60CeBdE66a7062B7B57A2b6Ae747041562510",
+    FCABI,
+  } as const;
 
+  const { data: maxMintAmountPerTxData } = useContractRead({
+    ...contractConfig,
+    functionName: "maxMintAmountPerTx",
+    watch: true,
+  });
+
+  const { data: totalSupplyData } = useContractRead({
+    ...contractConfig,
+    functionName: "totalSupply",
+    watch: true,
+  });
+
+  const { data: costData } = useContractRead({
+    ...contractConfig,
+    functionName: "cost",
+    watch: true,
+  });
 
   const decimalNumber = 0.02;
   const mintAmountInWei = BigInt(decimalNumber * _mintAmount * 1e18); // 1e18 is used to convert to Wei
 
-
-
-  const { config: writeConfig } = usePrepareContractWrite({
-    address:  "0x46b77a64dCeE752dd4F9e5b26A5273B2e182e57A", 
+  const { write } = useContractWrite({
+    address: '0x46b77a64dCeE752dd4F9e5b26A5273B2e182e57A',
     abi: FCABI,
-    functionName: "mint",
-    args: [BigInt(_mintAmount)],
-    value: BigInt(mintAmountInWei),
+    functionName:'mint',
+    args:[BigInt(_mintAmount)],
+    value: BigInt(mintAmountInWei)
   });
-
-  console.log('writeConfig:', writeConfig); 
-
-  const {
-    data: mintData,
-    write,
-    isLoading: isMintLoading,
-    isSuccess: isMintStarted,
-    error: mintError,
-  } = useContractWrite(writeConfig);
-
-  console.log('mintData:', mintData);  // Log the mintData object
-console.log('isMintLoading:', isMintLoading);  // Log the loading state
-console.log('isMintStarted:', isMintStarted);  // Log the success state
-console.log('mintError:', mintError);  // Log any errors
-
 
   const {
     data: txData,
@@ -100,9 +127,6 @@ console.log('mintError:', mintError);  // Log any errors
   } = useWaitForTransaction({
     hash: mintData?.hash,
   });
-
- console.log('txData:', txData);  // Log the txData object
- console.log('txError:', txError);  // Log any errors
 
   const calculateCostInEth = (amount: number) => {
     const costInEth = 0.02 * amount;
@@ -146,7 +170,7 @@ const mintNFT = async () => {
         }
     }
 };
-
+  
   function formatAddress(address?: string) {
     // Define how many characters you want to keep before and after the dots.
     const charactersToKeep = 4;
@@ -172,7 +196,7 @@ const mintNFT = async () => {
           display: "block",
           marginLeft: "auto",
           marginRight: "auto",
-          marginTop: 2,
+          marginTop: 1,
           marginBottom: 1,
           maxWidth: "100%",
           borderRadius: "10px"
@@ -267,7 +291,7 @@ const mintNFT = async () => {
                 }
               }}
             
-             
+              disabled={_mintAmount <= 0 || isMintLoading}
             >
               Mint NFT
             </Button>
