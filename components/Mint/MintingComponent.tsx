@@ -8,7 +8,7 @@ import styled from "@emotion/styled";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import FCABI from "./abi";
+import { FCABI } from "./abi";
 
 import Image from "next/image";
 import { Box } from "@mui/material";
