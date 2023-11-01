@@ -91,7 +91,8 @@ const MintNFTComponent = () => {
 
 
   const { config: writeConfig } = usePrepareContractWrite({
-    ...contractConfig,
+    address:  "0x46b77a64dCeE752dd4F9e5b26A5273B2e182e57A", 
+    abi: FCABI,
     functionName: "mint",
     args: [BigInt(_mintAmount)],
     value: BigInt(mintAmountInWei),
