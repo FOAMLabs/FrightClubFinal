@@ -148,7 +148,7 @@ const MintNFTComponent = () => {
       } else if (error instanceof Error) {
         console.error(error.message);
       } else {
-        console.error("An unknown error occurred.");
+        console.error("An  error occurred.");
       }
     }
   };
